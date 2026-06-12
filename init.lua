@@ -232,7 +232,19 @@ require('lazy').setup({
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
   --NOTE: For Git Shortcuts
   'tpope/vim-fugitive',
-
+  {
+    'Canop/nvim-bacon',
+    config = function()
+      require('bacon').setup {
+        quickfix = {
+          enabled = true, -- Enable Quickfix integration
+          event_trigger = true, -- Trigger QuickFixCmdPost after populating Quickfix list
+        },
+      }
+    end,
+    vim.keymap.set('n', '<leader>!', ':BaconLoad<CR>:w<CR>:BaconNext<CR>', { desc = 'Navigate to next bacon location' }),
+    vim.keymap.set('n', '<leader>,', ':BaconList<CR>', { desc = 'Open bacon locations list' }),
+  },
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
   -- keys can be used to configure plugin behavior/loading/etc.
@@ -362,6 +374,9 @@ require('lazy').setup({
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
           },
+        },
+        defaults = {
+          file_ignore_patterns = { 'node_modules' },
         },
       }
 
@@ -645,6 +660,7 @@ require('lazy').setup({
       local ensure_installed = vim.tbl_keys(servers.mason or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format lua code
+        'prettierd', -- Used to format javascript/typescript code
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -670,13 +686,22 @@ require('lazy').setup({
     opts = {
       notify_on_error = false,
       format_on_save = {
-        timeout_ms = 500,
+        timeout_ms = 2500,
         lsp_fallback = true,
       },
       formatters_by_ft = {
         lua = { 'stylua' },
         rust = { 'rustfmt', lsp_format = 'fallback' },
-        -- Conform can also run multiple formatters sequentially
+        javascript = { 'prettierd' },
+        typescript = { 'prettierd' },
+        javascriptreact = { 'prettierd' },
+        typescriptreact = { 'prettierd' },
+        css = { 'prettierd' },
+        html = { 'prettierd' },
+        json = { 'prettierd' },
+        yaml = { 'prettierd' },
+        markdown = { 'prettierd' }, -- Conform can also run multiple formatters sequentially
+        handlebars = { 'prettierd' },
         -- python = { "isort", "black" },
         --
         -- You can use a sub-list to tell conform to run *until* a formatter
@@ -744,12 +769,12 @@ require('lazy').setup({
           -- Accept ([y]es) the completion.
           --  This will auto-import if your LSP supports it.
           --  This will expand snippets if the LSP sent a snippet.
-          ['<C-y>'] = cmp.mapping.confirm { select = true },
+          ['<C-Space>'] = cmp.mapping.confirm { select = true },
 
           -- Manually trigger a completion from nvim-cmp.
           --  Generally you don't need this, because nvim-cmp will display
           --  completions whenever it has completion options available.
-          ['<C-Space>'] = cmp.mapping.complete {},
+          -- ['<C-Space>'] = cmp.mapping.complete {},
 
           -- Think of <c-l> as moving to the right of your snippet expansion.
           --  So if you have a snippet that's like:
